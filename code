@@ -1,0 +1,50 @@
+#include <windows.h>
+#include <GL/glut.h>
+
+float angle = 0.0f; // 주전자의 회전 각도
+
+void init(void) {
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glShadeModel(GL_FLAT);
+}
+
+void display(void) {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 1.0, 1.0);
+    glLoadIdentity();
+    gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+    glRotatef(angle, 0.0f, 1.0f, 0.0f); // y축 주위로 회전
+    glutWireTeapot(1.0);
+
+    glFlush();
+}
+
+void reshape(int w, int h) {
+    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+void timer(int value) {
+    angle += 1.0f; // 매 타이머 호출마다 회전 각도를 1도씩 증가
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0); // 60fps를 위해 16ms마다 타이머 호출
+}
+
+int main(int argc, char **argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow(argv[0]);
+    init();
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutTimerFunc(0, timer, 0); // 타이머 함수 호출
+    glutMainLoop();
+    return 0;
+}
